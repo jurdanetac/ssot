@@ -1,0 +1,10 @@
+atlanta:
+  vars:
+    ansible_user: root
+    app_version: "{{ global_version }}" # Left for Ansible runtime
+  hosts:
+    [[ atlanta.host1.name ]]:
+      http_port: [[ atlanta.host1.http_port ]]
+    [[ atlanta.host2.name ]]:
+      http_port: [[ atlanta.host2.http_port ]]
+      maxRequestsPerChild: [[ atlanta.host2.maxRequestsPerChild ]]

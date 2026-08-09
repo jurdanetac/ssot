@@ -1,14 +1,8 @@
-# Global settings
-environment = "production"
-port = 8080
-enable_ssl = true
+[atlanta.host1]
+name = "192.168.1.10"
+http_port = 8080
 
-[database]
-server = "192.168.1.1"
-ports = [ 8001, 8002, 8003 ]
-connection_max = 5000
-
-[database.credentials]
-user = "admin"
-# ISO 8601 timestamps are natively supported
-created_at = 2026-08-08T21:00:00Z
+[atlanta.host2]
+name = "192.168.1.11"
+http_port = 8080
+maxRequestsPerChild = 500
