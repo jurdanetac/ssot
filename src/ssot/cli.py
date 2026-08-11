@@ -1,27 +1,41 @@
 #!/usr/bin/env python3
 
-import tomllib
 import re
+import sys
+import tomllib
 
-ssot = "ssot.toml"
-target = "target.yaml"
-bracket_regex = r"\[\[ (.*?) \]\]"
+from pathlib import Path
 
-def main():
-    ssot_values = None
+BRACKET_PLACEHOLDER_RE = re.compile(r"\[\[ (.*?) \]\]")
+TPL_FILE_RE = re.compile(r"(.*\.tpl)", re.IGNORECASE)
+
+def main(args):
+    ssot_file = args[0]
+    ssot_dictionary = None
     
     # Load dictionary from SSoT
-    with open(ssot, "rb") as f:
-        ssot_values = tomllib.load(f)
+    with open(ssot_file, "rb") as f:
+        ssot_dictionary = tomllib.load(f)
 
-    # open target
-    with open(target, "r+") as f:
-        data = f.read()
+    target = Path(args[1]).resolve()
+    if target.is_dir():
+        templates = [f for f in target.iterdir() if TPL_FILE_RE.match(f.suffix)]
+        if templates:
+            print("FOUND:")
+            for tpl in templates:
+                print(tpl)
+    elif target.is_file():
+        print("file")
+    else:
+        print(f"Target '{target}' neither directory nor file.")
+        sys.exit(1)
+
     
-
-        pattern = re.compile(bracket_regex)
-        print(pattern.findall(data))
-        
-        
 if __name__ == "__main__":
-    main()
+    args = sys.argv[1:]
+
+    if len(args) < 2:
+        print("USAGE: python3 ssot.toml target")
+        sys.exit(1)
+
+    main(args)
