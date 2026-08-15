@@ -1,70 +1,45 @@
 # frozen_string_literal: true
 
 require_relative "ssot/version"
+
+require "pathname"
+
 require "toml"
 
 module Ssot
   class Error < StandardError; end
 
-  # args = ARGF.argv
-  #
-  # if args.size != 2
-  #   puts "USAGE: ruby lib/ssot.rb ssot.toml target"
-  #   exit
-  # end
-  #
-  ssot_file = "templates/ssot.toml"
+  args = ARGF.argv
+
+  if args.size != 2
+    puts "USAGE: ruby lib/ssot.rb ssot.toml target"
+    exit
+  end
+
+  ssot_file = Pathname args.first
+  target = Pathname args.last
   ssot_hash = TOML::Parser.new(File.read(ssot_file)).parsed
-  puts ssot_file, ssot_hash
+
+  if target.file?
+    puts "file"
+  elsif target.directory?
+    templates = target.glob("*.tpl")
+    templates.each do |template|
+      text = template.read
+      # matches = text.scan(/(\[\[\s.*?\s\]\])/i)
+      text.gsub!(/(\[\[\s(.*?)\s\]\])/i) do
+        placeholder = ::Regexp.last_match(1)
+        key = ::Regexp.last_match(2)
+
+        sub_keys = key.split(".")
+        value = ssot_hash.dig(*sub_keys)
+
+        text = text.gsub(placeholder, value.to_s)
+      end
+
+      puts text
+    end
+  else
+    puts "Target must be a file or a directory."
+  end
 end
-
-=begin
-#!/usr/bin/env python3
-
-import copy
-import re
-import sys
-import tomllib
-
-from pathlib import Path
-
-BRACKET_PLACEHOLDER_RE = re.compile(r"\[\[ (.*?) \]\]")
-TPL_FILE_RE = re.compile(r"(.*\.tpl)", re.IGNORECASE)
-
-
-class DotDict(dict):
-    def __getattr__(self, name):
-        if name.startswith("__") and name.endswith("__"):
-            raise AttributeError(name)
-
-        return self[name]
-
-    def get_dot(self, dot):
-        """get_dot("a.b.c")"""
-
-        value = copy.deepcopy(self)
-        to_pop = dot.split(".")
-
-        while to_pop:
-            next_key = to_pop.pop(0)
-            value = value[next_key]
-
-        return value
-
-
-def substitute_brackets(dictionary, text) -> str:
-    matches = BRACKET_PLACEHOLDER_RE.findall(text)
-
-    if not matches:
-        print("No brackets found.")
-        return
-
-    dot_dict = DotDict(dictionary)
-
-    for m in matches:
-        value = str(dot_dict.get_dot(m))
-        text = text.replace(f"[[ {m} ]]", value)
-
-    return text
-=end
-
