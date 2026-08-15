@@ -1,3 +1,14 @@
+# frozen_string_literal: true
+
+require_relative "ssot/version"
+
+module Ssot
+  class Error < StandardError; end
+
+  puts ARGF.argv.first
+end
+
+=begin
 #!/usr/bin/env python3
 
 import copy
@@ -82,3 +93,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     main(args)
+=end
