@@ -1,11 +1,20 @@
 # frozen_string_literal: true
 
 require_relative "ssot/version"
+require "toml"
 
 module Ssot
   class Error < StandardError; end
 
-  puts ARGF.argv.first
+  args = ARGF.argv
+
+  if args.size != 2
+    puts "USAGE: ruby lib/ssot.rb ssot.toml target"
+    exit
+  end
+
+  ssot_file, target_path = args
+  ssot_hash = TOML::Parser.new(File.read(ssot_file)).parsed
 end
 
 =begin
@@ -56,41 +65,4 @@ def substitute_brackets(dictionary, text) -> str:
         text = text.replace(f"[[ {m} ]]", value)
 
     return text
-
-
-def main(args) -> None:
-    ssot_file = args[0]
-    ssot_dictionary = None
-
-    # Load dictionary from SSoT
-    with open(ssot_file, "rb") as f:
-        ssot_dictionary = tomllib.load(f)
-        print(f"INFO: using dictionary {ssot_dictionary}")
-        print()
-
-    # Path of template(s) or enclosing folder
-    target = Path(args[1]).resolve()
-    if target.is_dir():
-        templates = [f for f in target.iterdir() if TPL_FILE_RE.match(f.suffix)]
-        if templates:
-            print("FOUND:")
-            for tpl in templates:
-                print(tpl)
-    elif target.is_file():
-        with open(target, "r") as template:
-            text = template.read()
-            print(substitute_brackets(ssot_dictionary, text))
-    else:
-        print(f"Target '{target}' neither directory nor file.")
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    args = sys.argv[1:]
-
-    if len(args) < 2:
-        print("USAGE: python3 ssot.toml target")
-        sys.exit(1)
-
-    main(args)
 =end
