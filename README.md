@@ -1,24 +1,19 @@
-# Ssot
+# SSoT (Single Source of Truth)
 
-TODO: Delete this and the text below, and describe your gem
+> A lightweight Ruby gem and CLI tool that compiles `.jtpl` templates into synchronized configuration files using a single TOML dataset.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ssot`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Why SSoT?
+Managing shared configuration parameters across multiple formats (`YAML`, `TOML`, `Terraform/HCL`) often leads to drift and duplicate definitions. **SSoT** allows you to maintain one centralized TOML definition and compile your application and infrastructure configs seamlessly.
+
+### Features
+- **Zero Configuration Drift:** Update values once in `ssot.toml`, compile everywhere.
+- **Deep Path Lookup:** Use dot notation (`[[ db.primary.host ]]`) to resolve nested TOML structures.
+- **Batch Processing:** Target individual files or recursively process entire directory trees.
+- **Auto Headers:** Automatically timestamps and tags generated configuration files.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-```
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-```
+TODO: Write installation instructions here
 
 ## Usage
 
@@ -32,7 +27,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ssot.
+Bug reports and pull requests are welcome on GitHub at https://github.com/jurdanetac/ssot.
 
 ## License
 
