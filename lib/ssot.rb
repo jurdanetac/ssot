@@ -9,37 +9,48 @@ require "toml"
 module Ssot
   class Error < StandardError; end
 
-  args = ARGF.argv
+  class Parser
+    attr_accessor :ssot
 
-  if args.size != 2
-    puts "USAGE: ruby lib/ssot.rb ssot.toml target"
-    exit
-  end
+    def initialize(ssot_path)
+      super()
+      @ssot = TOML::Parser.new(File.read(ssot_path)).parsed
+    end
 
-  ssot_file = Pathname args.first
-  target = Pathname args.last
-  ssot_hash = TOML::Parser.new(File.read(ssot_file)).parsed
+    def process(target)
+      # decide flow based on target path type
+      if target.file?
+        process_template target
+      elsif target.directory?
+        process_directory target
+      else
+        raise ArgumentError "Error"
+      end
+    end
 
-  if target.file?
-    puts "file"
-  elsif target.directory?
-    templates = target.glob("*.tpl")
-    templates.each do |template|
+    private
+
+    def process_directory(directory)
+      # get all templates in target directory
+      templates = directory.glob("*.tpl")
+      # iterate over each one and substitute the placeholders
+      templates.each { |template| process_template template }
+    end
+
+    def process_template(template)
       text = template.read
-      # matches = text.scan(/(\[\[\s.*?\s\]\])/i)
+
       text.gsub!(/(\[\[\s(.*?)\s\]\])/i) do
         placeholder = ::Regexp.last_match(1)
         key = ::Regexp.last_match(2)
 
         sub_keys = key.split(".")
-        value = ssot_hash.dig(*sub_keys)
+        value = ssot.dig(*sub_keys)
 
         text = text.gsub(placeholder, value.to_s)
       end
 
       puts text
     end
-  else
-    puts "Target must be a file or a directory."
   end
 end
