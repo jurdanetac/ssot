@@ -3,20 +3,19 @@
 
 require "pathname"
 
-require "toml"
+require "toml-rb"
 
 class Parser
   HASH_COMMENT_EXTENSIONS = %w[.tf .toml .yaml .yml].freeze
   PLACEHOLDER_RE = /(\[\[\s*(.*?)\s*\]\])/i
   TEMPLATE_EXTENSION = ".jtpl"
 
-  attr_reader :ssot
+  attr_reader :ssot_hash
 
   def initialize(ssot_path)
     ssot_path = Pathname(ssot_path)
     raise ArgumentError, "SSoT file '#{ssot_path}' does not exist." unless ssot_path.file?
-
-    @ssot = TOML::Parser.new(ssot_path.read).parsed
+    @ssot_hash = TomlRB.load_file(ssot_path)
   end
 
   def process(target)
@@ -47,7 +46,7 @@ class Parser
       key = ::Regexp.last_match(2)
 
       sub_keys = key.split(".")
-      value = ssot.dig(*sub_keys)
+      value = ssot_hash.dig(*sub_keys)
 
       value ? value.to_s : placeholder
     end
