@@ -29,6 +29,19 @@ class Parser
     end
   end
 
+  def clean_directory(dir)
+    directory = Pathname(dir)
+    raise ArgumentError, "'#{directory}' is not a directory." unless directory.directory?
+
+    files = directory.find.to_a
+    templates = files.select { |f| f.extname == TEMPLATE_EXTENSION }
+    rendered = templates.filter_map { |t|
+      f = t.sub_ext("")
+      f if files.include?(f)
+    }
+    rendered.each { |f| f.unlink }
+  end
+
   private
 
   def process_directory(directory)
@@ -76,5 +89,6 @@ if $PROGRAM_NAME == __FILE__
   target = Pathname(target)
 
   parser = Parser.new(ssot)
-  parser.process(target)
+  parser.clean_directory(target)
+  # parser.process(target)
 end
