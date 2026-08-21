@@ -13,7 +13,12 @@ Managing shared configuration parameters across multiple formats (`YAML`, `TOML`
 
 ## Usage
 
-`USAGE: ssot ssot.toml target`
+```
+usage: ssot [options] [target...]
+    -s, --ssot FILE                  Set source of truth
+    -c, --clean                      Remove rendered templates in target
+    -h, --help                       Prints this help
+```
 
 ## Contributing
 
