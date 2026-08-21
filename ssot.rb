@@ -3,6 +3,7 @@
 
 # stdlib
 require 'optparse'
+require 'pathname'
 
 # third party
 require 'toml-rb'
